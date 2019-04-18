@@ -7,7 +7,7 @@ I created this as an edited version of the Onetastic yearly calendar macro. I fo
 
 The source code is the Onetastic XML representation of the macro. I've found it easy enought to copy & paste this XML into Onetastic when creating a new macro.
 
-## Creating my yearly calendar macro
+## Creating the "My Yearly Calendar" Macro
 
 These are the general steps for creating a new macro for my yearly calendar.
 
@@ -19,3 +19,12 @@ These are the general steps for creating a new macro for my yearly calendar.
     1. **Category:** Calendar
     1. **Description:** My customized yearly calendar.
 1. **Close.** Close the Macro Editor window
+
+## Using the "My Yearly Calendar" Macro
+
+These are the general steps for using the new macro.
+
+1. **Creating complete?** Make sure to complete the steps above to create the "My Yearly Calendar" macro.
+1. **New page.** Create a new, blank, OneNote page.
+1. **Locate "Calendar" in Ribbon.** On the OneNote ribbon, inside the "Macros" group (this is the same group with the "Download Macros", "Edit Macros", and "New Macro" buttons) locate a new button named "Calendar".
+1. **My Yearly Calendar**. Click the "Calendar" button. A dropdown will appear and you will see "My Yearly Calendar". Click "My Yearly Calendar". Select the desired configuration in the dialog box then click the "OK: button. After a few moments, the calendar will appear on the page.
