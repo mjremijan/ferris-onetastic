@@ -1,0 +1,181 @@
+<Comment text="--------------------------------------------------" />
+<Comment text="My Yearly Calendar 2" />
+<Comment text="--------------------------------------------------" />
+<Comment text="" />
+<Expression>$curYear = DateTime_Year(DateTime_Now())</Expression>
+<Expression>$Months = Array("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")</Expression>
+<Expression>$DayNames = Array("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat")</Expression>
+<Comment text="$Newline looks funny in this GUI" />
+<Expression>$Newline = "
+    "</Expression>
+<Comment text="Show dialog box" />
+<Expression>$dialog_box = DialogBox_Create("")</Expression>
+<Expression>DialogBox_AddTextBox($dialog_box, "&amp;Year", "year", ($curYear + 1), false)</Expression>
+<Expression>DialogBox_AddDropDown($dialog_box, "First Day of &amp;Week", "firstDayOfWeek", "", Array("Monday", "Sunday"))</Expression>
+<Expression>DialogBox_AddDropDown($dialog_box, "One or two columns?", "columnNumber", "", Array(1, 2))</Expression>
+<Expression>DialogBox_Show($dialog_box)</Expression>
+<Expression>$Year = $dialog_box.controls["year"]</Expression>
+<Expression>$FirstDayOfWeek = $dialog_box.controls["firstDayOfWeek"]</Expression>
+<Expression>$ColumnNumber = $dialog_box.controls["columnNumber"]</Expression>
+<Comment text="Setup day names based on format" />
+<If>
+  <Condition>$FirstDayOfWeek == "Monday"</Condition>
+  <Expression>Array_PushBack($DayNames, Array_PopFront($DayNames))</Expression>
+</If>
+<Comment text="Clear all existing selection" />
+<ForEach var="Text">
+  <Array>QueryObjects("Text", GetCurrentPage())</Array>
+  <Expression>$Text.selected = false</Expression>
+</ForEach>
+<Comment text="If there are no outlines on the page, insert a new one" />
+<Expression>$Outlines = GetCurrentPage().outlines</Expression>
+<If>
+  <Condition>Array_Length($Outlines) == 0</Condition>
+  <Expression>$Outline = InsertObject(GetCurrentPage(), "Outline", -1)</Expression>
+</If>
+<Else>
+  <Expression>$Outline = Array_PopBack($Outlines)</Expression>
+</Else>
+<Comment text="Create a 2x6 table for the whole year, each cell will get a month" />
+<Expression>$YearTable = InsertObject($Outline, "Table", -1)</Expression>
+<Expression>$m = 0</Expression>
+<ForEach var="Month">
+  <Array>$Months</Array>
+  <Comment text="Insert rows and cells as necessary" />
+  <If>
+    <Condition>($m % $ColumnNumber) == 0</Condition>
+    <Expression>$YearRow = InsertObject($YearTable, "Row", -1)</Expression>
+  </If>
+  <Expression>$YearCell = InsertObject($YearRow, "Cell", -1)</Expression>
+  <Expression>$m += 1</Expression>
+  <Comment text="DateTime functions only work for years between 1970 and 3000" />
+  <Comment text="If you go 400 years in either direction, the calendar will be the same" />
+  <While>
+    <Condition>$Year &lt; 1970</Condition>
+    <Expression>$Year += 400</Expression>
+  </While>
+  <While>
+    <Condition>$Year &gt; 3000</Condition>
+    <Expression>$Year -= 400</Expression>
+  </While>
+  <Comment text="" />
+  <Comment text="Determine number of days. For some Reason, DaysInMonth() function isn't working" />
+  <If>
+    <Condition>((($Month == "April") || ($Month == "June")) || ($Month == "September")) || ($Month == "November")</Condition>
+    <Expression>$Days = 30</Expression>
+  </If>
+  <If>
+    <Condition>(((((($Month == "January") || ($Month == "March")) || ($Month == "May")) || ($Month == "July")) || ($Month == "August")) || ($Month == "October")) || ($Month == "December")</Condition>
+    <Expression>$Days = 31</Expression>
+  </If>
+  <If>
+    <Condition>$Month == "February"</Condition>
+    <Comment text="https://www.tutorialspoint.com/Java-program-to-find-if-the-given-number-is-a-leap-year" />
+    <If>
+      <Condition>((($Year % 4) == 0) &amp;&amp; (($Year % 100) != 0)) || (($Year % 400) == 0)</Condition>
+      <Expression>$Days = 29</Expression>
+    </If>
+    <Else>
+      <Expression>$Days = 28</Expression>
+    </Else>
+  </If>
+  <Comment text="" />
+  <Comment text="Find the first day of the month" />
+  <Expression>$Start = DateTime_DaysSinceSunday(((($Year &amp; "-") &amp; $m) &amp; "-01T12:00:00"))</Expression>
+  <If>
+    <Condition>$FirstDayOfWeek == "Monday"</Condition>
+    <Expression>$Start -= 1</Expression>
+    <If>
+      <Condition>$Start &lt; 0</Condition>
+      <Expression>$Start += 7</Expression>
+    </If>
+  </If>
+  <Comment text="Create a new Paragraph with title" />
+  <Expression>$Title = InsertObject($YearCell, "Paragraph", -1)</Expression>
+  <Expression>$Title.text = (($Month &amp; " ") &amp; $m)</Expression>
+  <Expression>$Title.bold = true</Expression>
+  <Expression>$Title.fontSize = 16</Expression>
+  <Expression>$Title.fontName = "Franklin Gothic Book"</Expression>
+  <Expression>$Title.fontColor = "#1E4E79"</Expression>
+  <Expression>$Title.selection = "all"</Expression>
+  <Comment text="Create a new table below it" />
+  <Expression>$Table = InsertObject($YearCell, "Table", -1)</Expression>
+  <Expression>$Table.bordersVisible = true</Expression>
+  <Expression>$Table.selection = "all"</Expression>
+  <Comment text="Insert header row" />
+  <Expression>$Row = InsertObject($Table, "Row", -1)</Expression>
+  <Expression>$i = (1 - $Start)</Expression>
+  <ForEach var="Day">
+    <Array>$DayNames</Array>
+    <Expression>$Cell = InsertObject($Row, "Cell", -1)</Expression>
+    <Expression>$Paragraph = InsertObject($Cell, "Paragraph", -1)</Expression>
+    <Expression>$Paragraph.text = $Day</Expression>
+    <Expression>$Paragraph.bold = true</Expression>
+    <Expression>$Paragraph.fontSize = 8</Expression>
+    <Expression>$Paragraph.fontName = "Franklin Gothic Book"</Expression>
+    <If>
+      <Condition>($i &gt; 0) &amp;&amp; ($i &lt;= $Days)</Condition>
+      <Expression>$Paragraph.fontColor = "#1E4E79"</Expression>
+    </If>
+    <Else>
+      <Expression>$Paragraph.fontColor = "#bebebe"</Expression>
+    </Else>
+    <Expression>$i += 1</Expression>
+  </ForEach>
+  <Comment text="Insert weeks" />
+  <Expression>$i = (1 - $Start)</Expression>
+  <While>
+    <Condition>$i &lt;= $Days</Condition>
+    <Comment text="Insert row with numbers" />
+    <Expression>$Row = InsertObject($Table, "Row", -1)</Expression>
+    <Expression>$j = 0</Expression>
+    <Expression>$k = $i</Expression>
+    <While>
+      <Condition>$j &lt; 7</Condition>
+      <Expression>$Cell = InsertObject($Row, "Cell", -1)</Expression>
+      <Expression>$Paragraph = InsertObject($Cell, "Paragraph", -1)</Expression>
+      <If>
+        <Condition>($i &gt; 0) &amp;&amp; ($i &lt;= $Days)</Condition>
+        <Expression>$Paragraph.text_numeric = $i</Expression>
+        <Expression>$Paragraph.fontSize = 8</Expression>
+        <Expression>$Paragraph.fontName = "Franklin Gothic Book"</Expression>
+        <Expression>$Paragraph.bold = true</Expression>
+      </If>
+      <Else>
+        <Expression>$Paragraph.text = "x"</Expression>
+        <Expression>$Paragraph.fontSize = 8</Expression>
+        <Expression>$Paragraph.alignment = "center"</Expression>
+        <Expression>$Paragraph.fontColor = "#bebebe"</Expression>
+      </Else>
+      <Expression>$i += 1</Expression>
+      <Expression>$j += 1</Expression>
+    </While>
+    <Comment text="Insert blank row" />
+    <Expression>$Row = InsertObject($Table, "Row", -1)</Expression>
+    <Expression>$j = 0</Expression>
+    <While>
+      <Condition>$j &lt; 7</Condition>
+      <Expression>$Cell = InsertObject($Row, "Cell", -1)</Expression>
+      <Expression>$Paragraph = InsertObject($Cell, "Paragraph", -1)</Expression>
+      <Expression>$Paragraph.fontName = "Franklin Gothic Book"</Expression>
+      <If>
+        <Condition>($k &gt; 0) &amp;&amp; ($k &lt;= $Days)</Condition>
+        <Expression>$Paragraph.text = " "</Expression>
+        <Expression>$Paragraph.fontSize = 8</Expression>
+      </If>
+      <Else>
+        <Expression>$Paragraph.text = "x"</Expression>
+        <Expression>$Paragraph.fontSize = 8</Expression>
+        <Expression>$Paragraph.alignment = "center"</Expression>
+        <Expression>$Paragraph.fontColor = "#bebebe"</Expression>
+      </Else>
+      <Expression>$k += 1</Expression>
+      <Expression>$j += 1</Expression>
+    </While>
+  </While>
+  <Comment text="Insert a blank line" />
+  <Expression>InsertObject($YearCell, "Paragraph", -1).text = ""</Expression>
+</ForEach>
+<Comment text="" />
+<Comment text="" />
+<Comment text="- end -" />
