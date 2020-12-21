@@ -111,7 +111,6 @@
     <Expression>$Paragraph = InsertObject($Cell, "Paragraph", -1)</Expression>
     <Expression>$Paragraph.text = $Day</Expression>
     <Expression>$Paragraph.bold = true</Expression>
-    <Expression>$Paragraph.fontSize = 8</Expression>
     <Expression>$Paragraph.fontName = "Franklin Gothic Book"</Expression>
     <If>
       <Condition>($i &gt; 0) &amp;&amp; ($i &lt;= $Days)</Condition>
@@ -137,13 +136,11 @@
       <If>
         <Condition>($i &gt; 0) &amp;&amp; ($i &lt;= $Days)</Condition>
         <Expression>$Paragraph.text_numeric = $i</Expression>
-        <Expression>$Paragraph.fontSize = 8</Expression>
         <Expression>$Paragraph.fontName = "Franklin Gothic Book"</Expression>
         <Expression>$Paragraph.bold = true</Expression>
       </If>
       <Else>
         <Expression>$Paragraph.text = "x"</Expression>
-        <Expression>$Paragraph.fontSize = 8</Expression>
         <Expression>$Paragraph.alignment = "center"</Expression>
         <Expression>$Paragraph.fontColor = "#bebebe"</Expression>
       </Else>
@@ -161,11 +158,9 @@
       <If>
         <Condition>($k &gt; 0) &amp;&amp; ($k &lt;= $Days)</Condition>
         <Expression>$Paragraph.text = " "</Expression>
-        <Expression>$Paragraph.fontSize = 8</Expression>
       </If>
       <Else>
         <Expression>$Paragraph.text = "x"</Expression>
-        <Expression>$Paragraph.fontSize = 8</Expression>
         <Expression>$Paragraph.alignment = "center"</Expression>
         <Expression>$Paragraph.fontColor = "#bebebe"</Expression>
       </Else>
